@@ -1,0 +1,13 @@
+Flask
+Flask-JWT-Extended
+Werkzeug
+pydub
+soundfile
+librosa
+scikit-learn
+torch
+torchaudio
+onnxruntime
+transformers
+anthropic
+python-dotenv
