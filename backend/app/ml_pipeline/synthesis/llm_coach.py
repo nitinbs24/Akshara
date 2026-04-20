@@ -2,20 +2,10 @@ import os
 import json
 from anthropic import Anthropic
 
-class SynthesisAggregator:
+class LLMCoach:
     def __init__(self):
         # 12. LLM Coaching Layer (Claude API - claude-haiku)
         self.client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", "mock-key"))
-
-    def compile_json_profile(self, linguistic_data, acoustic_data):
-        """
-        4.11 JSON Aggregator: Merges Branch A and Branch B outputs.
-        """
-        profile = {
-            "linguistic": linguistic_data,
-            "acoustic": acoustic_data
-        }
-        return profile
 
     def generate_coaching_advice(self, unified_profile: dict) -> str:
         """
@@ -40,13 +30,3 @@ class SynthesisAggregator:
             return response.content[0].text
         except Exception as e:
             return f"Failed to generate coaching advice. Error: {str(e)}"
-
-    def build_final_report(self, linguistic_data, acoustic_data):
-        profile = self.compile_json_profile(linguistic_data, acoustic_data)
-        coaching_text = self.generate_coaching_advice(profile)
-        
-        return {
-            "diagnostic_profile": profile,
-            "coaching_advice": coaching_text,
-            # Database saving logic (e.g. MongoDB) would inject `user_id` and document IDs here.
-        }
