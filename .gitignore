@@ -1,0 +1,25 @@
+# Environments
+.env
+.env.local
+venv/
+env/
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Temporary & Media Files
+backend/tmp/
+*.webm
+*.mp3
+*.wav
+
+# Databases
+*.db
+*.sqlite3
+
+# OS generated files
+.DS_Store
+Thumbs.db

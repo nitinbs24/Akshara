@@ -11,3 +11,5 @@ onnxruntime
 transformers
 anthropic
 python-dotenv
+flask-pymongo
+flask-bcrypt
