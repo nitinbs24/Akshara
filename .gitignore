@@ -23,3 +23,13 @@ backend/tmp/
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# Node / Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+npm-debug.log
+yarn-error.log
+
+# Backend Additional
+backend/temp_audio/
