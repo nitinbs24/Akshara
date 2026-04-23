@@ -1,33 +1,31 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, Navigate } from 'react-router-dom';
 
 const ResultsPage = () => {
-  // Mock data matching the design
-  const heatmapData = [
-    { text: "In", status: "fluent" },
-    { text: "my", status: "fluent" },
-    { text: "younger", status: "fluent" },
-    { text: "and", status: "fluent" },
-    { text: "more", status: "fluent" },
-    { text: "vulnerable", status: "hesitation" },
-    { text: "years", status: "fluent" },
-    { text: "my", status: "fluent" },
-    { text: "father", status: "fluent" },
-    { text: "gave", status: "fluent" },
-    { text: "me", status: "fluent" },
-    { text: "some", status: "fluent" },
-    { text: "advice", status: "fluent" },
-    { text: "that", status: "fluent" },
-    { text: "I've", status: "fluent" },
-    { text: "been", status: "fluent" },
-    { text: "turning", status: "fluent" },
-    { text: "over", status: "fluent" },
-    { text: "in", status: "fluent" },
-    { text: "my", status: "fluent" },
-    { text: "mind", status: "fluent" },
-    { text: "ever", status: "fluent" },
-    { text: "since.", status: "fluent" },
-  ];
+  const location = useLocation();
+  const report = location.state?.report;
+
+  // Redirect if no report data is found (e.g., direct URL access)
+  if (!report) {
+    return <Navigate to="/practice" replace />;
+  }
+
+  const { diagnostic_profile, coaching_advice } = report;
+  const { linguistic, acoustic } = diagnostic_profile;
+
+  // Processing Heatmap Data from difflib opcodes
+  const generateHeatmap = () => {
+    const transcriptWords = linguistic.transcript.split(' ');
+    // Simple logic: if difflib metrics were complex, we'd use opcodes.
+    // For now, we'll map the transcript and highlight based on alignment quality if available
+    // Or just show the transcript as analyzed.
+    return transcriptWords.map((word, i) => {
+      // In a more advanced version, we'd correlate this with linguistic.alignment
+      return { text: word, status: 'fluent' }; 
+    });
+  };
+
+  const heatmapData = generateHeatmap();
 
   const getStatusClasses = (status) => {
     switch (status) {
@@ -61,18 +59,18 @@ const ResultsPage = () => {
 
       {/* Main Content Canvas */}
       <main className="flex-grow w-full max-w-screen-2xl mx-auto px-8 py-12 flex flex-col md:flex-row gap-12">
-        {/* Left Column: Primary Analysis */}
+        {/* Left Column */}
         <div className="flex-grow flex flex-col gap-8 md:w-2/3">
           <header className="mb-4">
-            <h1 className="font-headline text-5xl font-bold tracking-tight text-on-surface mb-2">Analysis: The Great Gatsby</h1>
+            <h1 className="font-headline text-5xl font-bold tracking-tight text-on-surface mb-2">Analysis Session</h1>
             <p className="font-body text-lg text-on-surface-variant flex items-center gap-2">
-              <span className="material-symbols-outlined text-outline">calendar_today</span> October 24, 2023 
+              <span className="material-symbols-outlined text-outline">calendar_today</span> {new Date().toLocaleDateString()} 
               <span className="mx-2 text-outline-variant">•</span>
-              <span className="material-symbols-outlined text-outline">timer</span> 1:45
+              <span className="material-symbols-outlined text-outline">analytics</span> Accuracy: {linguistic.metrics.accuracy_percentage}%
             </p>
           </header>
 
-          {/* Fluency Heatmap Card */}
+          {/* Heatmap */}
           <section className="bg-surface-container-lowest rounded-xl p-8 shadow-sm group hover:bg-surface-container-low transition-colors duration-300">
             <h2 className="font-headline text-3xl font-semibold mb-6 flex items-center gap-3">
               <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>document_scanner</span>
@@ -85,18 +83,6 @@ const ResultsPage = () => {
                     {word.text}
                   </span>
                 ))}
-                {/* Manual Error Example for Tooltip demo */}
-                <div className="relative inline-block group/tooltip cursor-pointer">
-                  <span className="text-error bg-error-container rounded-sm px-1 font-bold underline decoration-error underline-offset-4">advantages</span>
-                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 z-10 pointer-events-none">
-                    <div className="bg-inverse-surface text-inverse-on-surface text-sm rounded-lg py-2 px-3 shadow-lg flex flex-col gap-1">
-                      <span className="font-semibold text-error-container text-xs uppercase tracking-wider">Phoneme Error</span>
-                      <span className="font-mono">Target: /dʒ/</span>
-                      <span className="font-mono text-outline-variant">Found: /tʃ/</span>
-                    </div>
-                    <div className="w-3 h-3 bg-inverse-surface rotate-45 absolute -bottom-1.5 left-1/2 -translate-x-1/2"></div>
-                  </div>
-                </div>
               </div>
             </div>
             
@@ -107,52 +93,22 @@ const ResultsPage = () => {
             </div>
           </section>
 
-          {/* Reading Velocity Chart Mockup */}
+          {/* Velocity */}
           <section className="bg-surface-container-lowest rounded-xl p-8 shadow-sm hover:bg-surface-container-low transition-colors duration-300">
             <div className="flex justify-between items-center mb-6">
               <h2 className="font-headline text-3xl font-semibold">Reading Velocity</h2>
-              <div className="flex items-center gap-6 text-right">
-                <div className="hidden sm:flex flex-col text-xs font-medium text-on-surface-variant gap-1">
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-4 h-0.5 bg-primary rounded"></div> Current Session
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-4 h-0.5 border-t-2 border-dashed border-outline rounded"></div> Historical Avg (135)
-                  </div>
-                </div>
-                <div>
-                  <span className="text-4xl font-bold text-primary font-headline">142</span>
-                  <span className="text-sm font-medium text-on-surface-variant uppercase tracking-wider ml-1">WCPM</span>
-                </div>
+              <div className="text-right">
+                <span className="text-4xl font-bold text-primary font-headline">{Math.round(acoustic.articulation_rate * 60)}</span>
+                <span className="text-sm font-medium text-on-surface-variant uppercase tracking-wider ml-1">WCPM</span>
               </div>
             </div>
-            {/* Visual Mockup Chart */}
-            <div className="relative h-64 w-full border-b border-l border-outline-variant/30 mt-4 pb-2 pl-2">
-              <div className="absolute -left-8 top-0 text-xs text-outline font-mono opacity-50">160</div>
-              <div className="absolute -left-8 top-2/4 text-xs text-outline font-mono opacity-50">120</div>
-              <div className="absolute -bottom-6 left-1/4 text-xs text-outline font-mono opacity-50">Q1</div>
-              <div className="absolute -bottom-6 right-0 text-xs text-outline font-mono opacity-50">End</div>
-              <svg className="absolute inset-0 h-full w-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 1000 200">
-                <defs>
-                  <linearGradient id="lineGrad" x1="0%" x2="100%" y1="0%" y2="0%">
-                    <stop offset="0%" stopColor="#004e59" />
-                    <stop offset="100%" stopColor="#176774" />
-                  </linearGradient>
-                  <linearGradient id="areaGrad" x1="0%" x2="0%" y1="0%" y2="100%">
-                    <stop offset="0%" stopColor="#176774" stopOpacity="0.2" />
-                    <stop offset="100%" stopColor="#176774" stopOpacity="0" />
-                  </linearGradient>
-                </defs>
-                <path d="M 0,75 Q 250,85 500,75 T 1000,70" fill="none" opacity="0.3" stroke="#6f797c" strokeDasharray="8,8" strokeWidth="2" />
-                <path d="M 0,150 C 250,110 500,140 750,70 C 850,40 1000,20 1000,20 L 1000,200 L 0,200 Z" fill="url(#areaGrad)" />
-                <path d="M 0,150 C 250,110 500,140 750,70 C 850,40 1000,20 1000,20" fill="none" stroke="url(#lineGrad)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" />
-                <circle cx="1000" cy="20" fill="#ffffff" r="6" stroke="#176774" strokeWidth="3" />
-              </svg>
+            <div className="relative h-48 w-full bg-surface-container-low rounded-lg flex items-center justify-center border border-outline-variant/10">
+               <p className="font-label text-sm text-on-surface-variant">Articulation Rate: {acoustic.articulation_rate.toFixed(2)} syllables/sec</p>
             </div>
           </section>
         </div>
 
-        {/* Right Column: Context & Coaching */}
+        {/* Right Column: AI Coach */}
         <aside className="flex flex-col gap-8 md:w-1/3">
           <div className="rounded-xl p-8 bg-surface-container-lowest shadow-sm relative overflow-hidden border border-outline-variant/10">
             <div className="absolute inset-0 bg-gradient-to-br from-primary to-primary-container opacity-5"></div>
@@ -163,12 +119,9 @@ const ResultsPage = () => {
                 </div>
                 <h3 className="font-headline text-2xl font-bold text-primary">Curator's Notes</h3>
               </div>
-              <p className="font-body text-base leading-relaxed text-on-surface-variant">
-                Your pace is excellent, but we noticed some hesitation on aspirated consonants. Focus on the flow of the Gatsby passage next time to improve your natural rhythm.
-              </p>
-              <button className="mt-6 w-full py-3 px-6 rounded-full hero-gradient text-white font-medium tracking-wide hover:opacity-90 transition-opacity flex justify-center items-center gap-2">
-                Review Audio <span className="material-symbols-outlined text-sm">play_arrow</span>
-              </button>
+              <div className="font-body text-base leading-relaxed text-on-surface-variant whitespace-pre-wrap">
+                {coaching_advice}
+              </div>
             </div>
           </div>
 
@@ -179,12 +132,9 @@ const ResultsPage = () => {
             </div>
             <div className="mb-4">
               <span className="inline-block px-3 py-1 bg-surface-container-lowest text-primary text-sm font-bold uppercase tracking-wider rounded border border-outline-variant/20 mb-2">
-                The Careful Decoder
+                {acoustic.reading_archetype}
               </span>
             </div>
-            <p className="font-body text-sm text-on-surface-variant leading-relaxed">
-              You prioritize accuracy and phonetic precision, which is a strong foundation. Next, we can work on increasing your reading flow.
-            </p>
           </div>
         </aside>
       </main>
@@ -192,15 +142,8 @@ const ResultsPage = () => {
       {/* Footer */}
       <footer className="bg-[#f3f4f5] dark:bg-[#191c1d] border-t border-outline-variant/10 py-12 mt-auto">
         <div className="flex flex-col md:flex-row justify-between items-center px-8 max-w-screen-2xl mx-auto gap-6 opacity-80">
-          <div className="flex items-center gap-4">
-            <span className="font-headline text-lg font-semibold text-[#006778]">Akshara</span>
-            <span className="font-body text-xs text-[#40484a]">© 2024 Akshara. Cultivating digital literacy.</span>
-          </div>
-          <div className="flex flex-wrap gap-6 font-body text-xs">
-            <Link to="#" className="text-[#40484a] hover:text-[#006778]">About Us</Link>
-            <Link to="#" className="text-[#40484a] hover:text-[#006778]">Privacy Policy</Link>
-            <Link to="#" className="text-[#40484a] hover:text-[#006778]">Terms of Service</Link>
-          </div>
+          <span className="font-headline text-lg font-semibold text-[#006778]">Akshara</span>
+          <span className="font-body text-xs text-[#40484a]">© 2024 Akshara. Cultivating digital literacy.</span>
         </div>
       </footer>
     </div>
