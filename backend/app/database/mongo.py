@@ -1,4 +1,5 @@
 import os
+import certifi
 from flask_pymongo import PyMongo
 from dotenv import load_dotenv
 
@@ -6,7 +7,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Initialize PyMongo instance
-mongo = PyMongo()
+# We'll use certifi to provide the correct CA certificates for MongoDB Atlas on Windows
+ca = certifi.where()
+mongo = PyMongo(tlsCAFile=ca)
 
 def init_db(app):
     load_dotenv()
@@ -17,5 +20,6 @@ def init_db(app):
         uri = uri.replace("mongodb.net/?", "mongodb.net/akshara?")
              
     app.config["MONGO_URI"] = uri
-    mongo.init_app(app)
+    # Re-initialize with the app context if needed
+    mongo.init_app(app, tlsCAFile=ca)
     return mongo

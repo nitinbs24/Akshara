@@ -1,7 +1,11 @@
 import torch
 
 # Load Silero VAD locally
-model, utils = torch.hub.load(repo_or_dir='snakers4/silero-vad', model='silero_vad', force_reload=True, onnx=True)
+# Set force_reload=False to use local cache after first download
+model, utils = torch.hub.load(repo_or_dir='snakers4/silero-vad', 
+                                model='silero_vad', 
+                                force_reload=False, 
+                                onnx=True)
 get_speech_timestamps, save_audio, read_audio, VADIterator, collect_chunks = utils
 
 class VADFilter:

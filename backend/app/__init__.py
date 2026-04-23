@@ -23,7 +23,8 @@ def create_app():
     app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY", "super-secret-key")
     
     # Initialize Extensions
-    mongo.init_app(app)
+    from app.database.mongo import init_db
+    init_db(app)
     bcrypt.init_app(app)
     jwt.init_app(app)
     
