@@ -1,31 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import { passagesApi } from '../services/api';
 
 const ReadingPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [isRecording, setIsRecording] = useState(false);
+  const [passage, setPassage] = useState(null);
+  const [loading, setLoading] = useState(true);
   
-  // In a real app, we'd fetch the passage by ID
-  const passage = {
-    title: "The Great Gatsby",
-    author: "F. Scott Fitzgerald",
-    chapter: "Chapter I",
-    content: [
-      "In my younger and more vulnerable years my father gave me some advice that I’ve been turning over in my mind ever since.",
-      "\"Whenever you feel like criticizing any one,\" he told me, \"just remember that all the people in this world haven't had the advantages that you've had.\"",
-      "He didn't say any more, but we've always been unusually communicative in a reserved way, and I understood that he meant a great deal more than that. In consequence, I'm inclined to reserve all judgments, a habit that has opened up many curious natures to me and also made me the victim of not a few veteran bores.",
-      "The abnormal mind is quick to detect and attach itself to this quality when it appears in a normal person, and so it came about that in college I was unjustly accused of being a politician, because I was privy to the secret griefs of wild, unknown men."
-    ]
-  };
+  useEffect(() => {
+    const fetchPassage = async () => {
+      try {
+        const data = await passagesApi.getPassage(id);
+        setPassage(data);
+      } catch (err) {
+        console.error('Error fetching passage:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPassage();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-surface">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!passage) {
+    return <div className="min-h-screen flex items-center justify-center">Passage not found.</div>;
+  }
 
   const toggleRecording = () => {
     setIsRecording(!isRecording);
-    // Real MediaRecorder logic will go here later
   };
 
   const handleProcess = () => {
-    // Navigate to results page
     console.log("Processing recording...");
     navigate('/results'); 
   };
@@ -64,32 +78,31 @@ const ReadingPage = () => {
         
         {/* Editorial Context Header */}
         <header className="max-w-2xl text-center mt-16 mb-12">
-          <span className="font-label text-sm uppercase tracking-[0.15em] font-bold text-on-surface-variant">{passage.chapter}</span>
+          <span className="font-label text-sm uppercase tracking-[0.15em] font-bold text-on-surface-variant">{passage.cefr_level}</span>
           <h1 className="font-headline text-4xl md:text-5xl text-on-surface mt-4 mb-2 tracking-tight">{passage.title}</h1>
-          <p className="font-body text-base text-on-surface-variant">{passage.author}</p>
+          <p className="font-body text-base text-on-surface-variant">{passage.author || "Anonymous"}</p>
         </header>
 
         {/* Reading Canvas */}
         <article className="bg-surface-container-lowest rounded-[2rem] pt-16 pb-20 pl-12 pr-20 md:pl-24 md:pr-32 max-w-4xl w-full shadow-[0_48px_80px_rgba(25,28,29,0.05)] relative z-10 transition-transform duration-500 hover:-translate-y-1">
           <div className="font-headline text-xl md:text-2xl leading-[1.8] text-on-surface space-y-8 tracking-tight selection:bg-tertiary-fixed selection:text-tertiary">
-            {passage.content.map((paragraph, index) => (
-              <p key={index}>{paragraph}</p>
-            ))}
+            {/* Split content by newlines if it's a single string, or handle array */}
+            {Array.isArray(passage.text) 
+              ? passage.text.map((paragraph, index) => <p key={index}>{paragraph}</p>)
+              : passage.text.split('\n').map((paragraph, index) => <p key={index}>{paragraph}</p>)
+            }
           </div>
-          {/* Subtle scroll accent */}
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-primary-container/30 to-transparent rounded-full mb-8"></div>
         </article>
 
         {/* Floating Action Controls */}
         <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50">
           <div className="bg-surface-container-lowest/80 backdrop-blur-[24px] rounded-full p-3 shadow-[0_32px_64px_rgba(25,28,29,0.08)] border border-outline-variant/20 flex items-center gap-4">
-            {/* Restart Button */}
             <button className="font-label text-primary font-medium px-5 py-3 hover:bg-surface-container-highest rounded-full transition-colors flex items-center gap-2 group">
               <span className="material-symbols-outlined text-xl group-hover:-rotate-90 transition-transform duration-300">restart_alt</span>
               <span>Restart</span>
             </button>
             
-            {/* Record Button */}
             <button 
               onClick={toggleRecording}
               className={`w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 group focus:outline-none focus:ring-4 focus:ring-primary-fixed ${
@@ -103,7 +116,6 @@ const ReadingPage = () => {
               </span>
             </button>
             
-            {/* Process Button */}
             <button 
               onClick={handleProcess}
               className="font-label text-primary font-medium px-5 py-3 border border-outline-variant/30 rounded-full hover:bg-surface-container-low transition-colors flex items-center gap-2 group focus:outline-none focus:ring-2 focus:ring-primary"

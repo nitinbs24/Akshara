@@ -27,3 +27,18 @@ export const authApi = {
     return response.json();
   }
 };
+
+export const passagesApi = {
+  getPassages: async (difficulty = '') => {
+    const url = difficulty ? `/passages?difficulty=${difficulty}` : '/passages';
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Failed to fetch passages');
+    return response.json();
+  },
+
+  getPassage: async (id) => {
+    const response = await fetch(`/passages/${id}`);
+    if (!response.ok) throw new Error('Failed to fetch passage');
+    return response.json();
+  }
+};

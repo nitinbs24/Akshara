@@ -1,60 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { passagesApi } from '../services/api';
 
 const PracticePage = () => {
   const [passages, setPassages] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedDifficulty, setSelectedDifficulty] = useState('A1');
+  const [selectedDifficulty, setSelectedDifficulty] = useState('All');
   const [selectedCategory, setSelectedCategory] = useState('Literature');
 
-  const difficulties = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+  const difficulties = ['All', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
   const categories = ['Literature', 'Science', 'History', 'News', 'Creative'];
 
-  // Placeholder data matching the design
-  const dummyPassages = [
-    {
-      id: 1,
-      title: 'The Last Leaf',
-      difficulty: 'A1',
-      category: 'Literature',
-      description: 'A timeless story of hope and sacrifice in Greenwich Village, focusing on an ailing young woman and an old artist.'
-    },
-    {
-      id: 2,
-      title: 'The Great Gatsby - Chapter 1',
-      difficulty: 'B2',
-      category: 'Literature',
-      description: "In my younger and more vulnerable years my father gave me some advice that I've been turning over in my mind ever since."
-    },
-    {
-      id: 3,
-      title: 'Quantum Entanglement Overview',
-      difficulty: 'C1',
-      category: 'Science',
-      description: 'An advanced exploration of the physical phenomenon that occurs when a group of particles are generated, interact, or share spatial proximity.'
-    },
-    {
-      id: 4,
-      title: 'The Fall of Rome',
-      difficulty: 'B1',
-      category: 'History',
-      description: 'Examining the myriad internal and external factors that contributed to the gradual collapse of the Western Roman Empire.'
-    },
-    {
-      id: 5,
-      title: 'Global Tech Trends 2024',
-      difficulty: 'A2',
-      category: 'News',
-      description: 'A summary of the most impactful technological advancements expected to shape our daily lives in the coming year.'
-    }
-  ];
-
   useEffect(() => {
-    // In a real app, we'd fetch from /passages
-    // For now, using the dummy data to match the UI design
-    setPassages(dummyPassages);
-    setLoading(false);
-  }, []);
+    fetchPassages();
+  }, [selectedDifficulty]);
+
+  const fetchPassages = async () => {
+    setLoading(true);
+    try {
+      const difficultyParam = selectedDifficulty === 'All' ? '' : selectedDifficulty;
+      const data = await passagesApi.getPassages(difficultyParam);
+      setPassages(data);
+    } catch (err) {
+      console.error('Error fetching passages:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredPassages = passages.filter(p => 
     p.difficulty === selectedDifficulty || p.category === selectedCategory
