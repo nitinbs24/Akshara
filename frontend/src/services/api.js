@@ -62,5 +62,15 @@ export const evaluationApi = {
       throw new Error(errorData.error || 'Audio processing failed');
     }
     return response.json();
+  },
+
+  getHistory: async (token) => {
+    const response = await fetch('/evaluate/history', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    if (!response.ok) throw new Error('Failed to fetch history');
+    return response.json();
   }
 };

@@ -73,3 +73,15 @@ def process_audio():
 
     finally:
         MemoryManager.cleanup_files([webm_path, wav_path])
+
+@evaluate_bp.route("/history", methods=["GET"])
+@jwt_required()
+def get_history():
+    current_user_id = get_jwt_identity()
+    try:
+        reports = list(mongo.db.reports.find({"user_id": current_user_id}).sort("timestamp", -1))
+        for report in reports:
+            report["_id"] = str(report["_id"])
+        return jsonify(reports), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
