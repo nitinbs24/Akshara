@@ -42,3 +42,25 @@ export const passagesApi = {
     return response.json();
   }
 };
+
+export const evaluationApi = {
+  processAudio: async (audioBlob, groundTruthText, token) => {
+    const formData = new FormData();
+    formData.append('audio', audioBlob, 'recording.webm');
+    formData.append('ground_truth_text', groundTruthText);
+
+    const response = await fetch('/evaluate/process-audio', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      body: formData
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Audio processing failed');
+    }
+    return response.json();
+  }
+};
