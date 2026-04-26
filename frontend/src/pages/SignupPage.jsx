@@ -32,7 +32,12 @@ const SignupPage = () => {
 
     setIsLoading(true);
     try {
-      const data = await authApi.register(formData.email, formData.password);
+      const data = await authApi.register(
+        formData.email, 
+        formData.password, 
+        formData.fullName, 
+        formData.dob
+      );
       login(data.access_token);
       navigate('/practice');
     } catch (err) {
@@ -45,7 +50,7 @@ const SignupPage = () => {
   return (
     <div className="bg-background text-on-surface font-body min-h-screen flex flex-col antialiased">
       {/* Header */}
-      <header className="bg-surface-bright flex justify-between items-center px-8 py-6 w-full max-w-7xl mx-auto">
+      <header className="bg-surface-bright flex justify-between items-center px-8 py-6 w-full max-w-full mx-auto">
         <Link to="/" className="text-2xl font-headline font-bold text-primary tracking-tight">Akshara</Link>
         <div>
           <Link to="/login" className="text-primary font-body text-sm font-medium hover:text-primary-container transition-colors duration-200">Login</Link>

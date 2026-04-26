@@ -14,9 +14,9 @@ class SynthesisAggregator:
         }
         return profile
 
-    def build_final_report(self, linguistic_data, acoustic_data):
+    def build_final_report(self, linguistic_data, acoustic_data, user_profile=None):
         profile = self.compile_json_profile(linguistic_data, acoustic_data)
-        coaching_text = self.coach.generate_coaching_advice(profile)
+        coaching_text = self.coach.generate_coaching_advice(profile, user_profile)
         
         return {
             "diagnostic_profile": profile,

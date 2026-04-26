@@ -7,16 +7,23 @@ class LLMCoach:
         # 12. LLM Coaching Layer (Claude API - claude-haiku)
         self.client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", "mock-key"))
 
-    def generate_coaching_advice(self, unified_profile: dict) -> str:
+    def generate_coaching_advice(self, unified_profile: dict, user_profile: dict = None) -> str:
         """
         Takes the unified JSON metrics and sends to Claude-haiku for 2-3 sentences of advice.
         """
-        system_prompt = "You are an expert AI reading coach. Review the following JSON reading diagnostic profile and provide 2-3 sentences of encouraging, personalized coaching advice based on the acoustic and linguistic features."
+        user_name = user_profile.get("full_name", "Student") if user_profile else "Student"
+        user_level = user_profile.get("level", "Unknown Level") if user_profile else "Unknown Level"
+
+        system_prompt = (
+            f"You are an expert AI reading coach. You are coaching {user_name}, who is at the '{user_level}' reading stage. "
+            "Review the following JSON reading diagnostic profile and provide 2-3 sentences of encouraging, personalized coaching advice. "
+            f"Address the student by their name, {user_name}."
+        )
         user_content = f"JSON Profile Data: {json.dumps(unified_profile, indent=2)}"
         
         # If no valid API key is set, mock the coaching response.
         if self.client.api_key == "mock-key":
-            return "(Mock) You read at a strong pace but your pitch stayed flat throughout — try varying your tone on question sentences."
+            return f"Great effort, {user_name}! You read at a strong pace for a {user_level}, but your pitch stayed flat — try varying your tone on question sentences."
 
         try:
             response = self.client.messages.create(

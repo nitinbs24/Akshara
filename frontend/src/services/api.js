@@ -14,15 +14,28 @@ export const authApi = {
     return response.json();
   },
 
-  register: async (email, password) => {
+  register: async (email, password, fullName, dob) => {
     const response = await fetch(`${API_BASE_URL}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, full_name: fullName, dob }),
     });
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.error || 'Registration failed');
+    }
+    return response.json();
+  },
+
+  getProfile: async (token) => {
+    const response = await fetch(`${API_BASE_URL}/auth/profile`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to fetch profile');
     }
     return response.json();
   }

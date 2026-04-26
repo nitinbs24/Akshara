@@ -7,7 +7,7 @@ const LandingPage = () => {
     <div className="min-h-screen flex flex-col">
       {/* TopNavBar */}
       <nav className="bg-[#f8f9fa] dark:bg-[#191c1d] docked full-width top-0 z-50 sticky transition-all duration-300 border-b border-transparent shadow-sm">
-        <div className="flex justify-between items-center px-8 py-4 w-full max-w-[1440px] mx-auto">
+        <div className="flex justify-between items-center px-8 py-4 w-full max-w-full mx-auto">
           <div className="flex items-center gap-2">
             <span className="text-2xl font-headline font-bold text-[#006778] dark:text-[#a8eefd] tracking-tight">Akshara</span>
           </div>
@@ -24,7 +24,7 @@ const LandingPage = () => {
       <main className="flex-grow">
         {/* Hero Section */}
         <section className="relative pt-24 pb-32 px-6 lg:px-12 overflow-hidden">
-          <div className="max-w-[1440px] mx-auto grid lg:grid-cols-2 gap-16 items-center">
+          <div className="max-w-full mx-auto grid lg:grid-cols-2 gap-16 items-center">
             <div className="z-10 pl-4 lg:pl-12">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-label text-sm mb-6 border border-outline-variant/20">
                 <span className="material-symbols-outlined text-[18px] text-primary">auto_awesome</span>
@@ -79,7 +79,7 @@ const LandingPage = () => {
 
         {/* The Three Pillars */}
         <section className="py-24 bg-surface-container-low px-6 lg:px-12">
-          <div className="max-w-[1440px] mx-auto">
+          <div className="max-w-full mx-auto">
             <div className="text-center max-w-2xl mx-auto mb-16">
               <h2 className="font-headline text-4xl font-semibold tracking-tight text-on-surface mb-4">Precision Analysis at Every Level</h2>
               <p className="font-body text-on-surface-variant text-lg">Our multi-layered AI dissects your reading to provide actionable, nuanced feedback.</p>
@@ -139,7 +139,7 @@ const LandingPage = () => {
 
       {/* Footer */}
       <footer className="bg-[#f3f4f5] dark:bg-[#1d2021] w-full mt-auto border-t border-[#bec8cb]/20">
-        <div className="flex flex-col md:flex-row justify-between items-center px-12 py-8 w-full max-w-[1440px] mx-auto gap-6 md:gap-0">
+        <div className="flex flex-col md:flex-row justify-between items-center px-12 py-8 w-full max-w-full mx-auto gap-6 md:gap-0">
           <div className="text-lg font-headline font-bold text-[#006778]">Akshara</div>
           <div className="flex flex-wrap justify-center gap-6">
             <a className="font-body text-sm text-[#40484a] dark:text-[#bec8cb] hover:text-[#006778] dark:hover:text-[#a8eefd] transition-all duration-200" href="#">About</a>

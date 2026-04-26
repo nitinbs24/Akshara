@@ -3,6 +3,7 @@ import traceback
 from datetime import datetime
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from bson import ObjectId
 
 from app.database.mongo import mongo
 from app.ml_pipeline.pre_processing.audio_converter import AudioConverter
@@ -52,7 +53,37 @@ def process_audio():
         acoustic_data = acoustic_engine.process_acoustic(wav_path, vad_timestamps)
         
         # 4. Synthesis & Coaching
-        final_report = aggregator.build_final_report(linguistic_data, acoustic_data)
+        user_profile = mongo.db.users.find_one({"_id": ObjectId(current_user_id)})
+        final_report = aggregator.build_final_report(linguistic_data, acoustic_data, user_profile)
+        
+        # 4.5 Automated Level Advancement
+        accuracy = linguistic_data.get("metrics", {}).get("accuracy_percentage", 0)
+        current_level_str = user_profile.get("level", "Level 1 Reader")
+        current_streak = user_profile.get("success_streak", 0)
+        
+        new_level_str = current_level_str
+        new_streak = current_streak
+
+        if accuracy >= 90:
+            new_streak += 1
+            if new_streak >= 3:
+                # Level Up Logic
+                levels = ["Level 1 Reader", "Level 2 Reader", "Level 3 Reader", "Level 4 Reader", "Level 5 Reader"]
+                try:
+                    idx = levels.index(current_level_str)
+                    if idx < len(levels) - 1:
+                        new_level_str = levels[idx + 1]
+                        new_streak = 0 # Reset streak after level up
+                except ValueError:
+                    new_level_str = "Level 1 Reader"
+        else:
+            new_streak = 0 # Reset streak on poor performance
+
+        if new_level_str != current_level_str or new_streak != current_streak:
+            mongo.db.users.update_one(
+                {"_id": ObjectId(current_user_id)},
+                {"$set": {"level": new_level_str, "success_streak": new_streak}}
+            )
         
         # 5. Persistence
         report_to_save = {

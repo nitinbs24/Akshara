@@ -109,7 +109,7 @@ const ReadingPage = () => {
 
       {/* TopNavBar */}
       <nav className="bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-xl sticky top-0 z-50 border-b border-outline-variant/10 shadow-sm">
-        <div className="flex justify-between items-center w-full px-6 py-4 max-w-[1440px] mx-auto">
+        <div className="flex justify-between items-center w-full px-6 py-4 max-w-full mx-auto">
           <Link to="/" className="text-2xl font-bold font-headline text-primary tracking-tight">
             Akshara
           </Link>

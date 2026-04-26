@@ -58,7 +58,7 @@ const HistoryPage = () => {
     <div className="bg-background text-on-surface font-body antialiased min-h-screen flex flex-col">
       {/* TopNavBar */}
       <header className="sticky top-0 z-50 bg-[#f8f9fa] dark:bg-[#191c1d] w-full border-b border-outline-variant/10">
-        <div className="flex justify-between items-center px-8 py-4 w-full max-w-7xl mx-auto">
+        <div className="flex justify-between items-center px-8 py-4 w-full max-w-full mx-auto">
           <Link to="/" className="font-headline text-2xl font-bold italic text-[#006778] dark:text-[#a8eefd]">
             Akshara
           </Link>
@@ -81,7 +81,7 @@ const HistoryPage = () => {
         </div>
       </header>
 
-      <main className="flex-1 p-6 md:p-12 lg:px-24 max-w-7xl mx-auto w-full">
+      <main className="flex-1 p-6 md:p-12 lg:px-24 max-w-full mx-auto w-full">
         <header className="mb-12 max-w-2xl">
           <h1 className="font-headline text-5xl md:text-6xl text-on-surface tracking-tight leading-tight mb-4">
             Reading Archive

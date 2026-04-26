@@ -36,7 +36,7 @@ const PracticePage = () => {
     <div className="bg-surface text-on-surface font-body antialiased min-h-screen flex flex-col">
       {/* TopNavBar */}
       <nav className="hidden md:flex bg-surface-bright border-b border-outline-variant/10 sticky top-0 z-50">
-        <div className="flex justify-between items-center px-8 py-4 w-full max-w-[1440px] mx-auto">
+        <div className="flex justify-between items-center px-8 py-4 w-full max-w-full mx-auto">
           <Link to="/" className="font-headline text-2xl font-bold italic text-primary">Akshara</Link>
           <div className="flex items-center gap-8">
             <Link to="/practice" className="text-primary font-bold border-b-2 border-primary pb-1 font-body text-sm">Practice</Link>
@@ -51,7 +51,7 @@ const PracticePage = () => {
         </div>
       </nav>
 
-      <main className="flex-grow flex flex-col max-w-[1440px] mx-auto w-full px-4 sm:px-6 md:px-8 py-12 md:py-20 gap-16">
+      <main className="flex-grow flex flex-col max-w-full mx-auto w-full px-4 sm:px-6 md:px-8 py-12 md:py-20 gap-16">
         {/* Header Section */}
         <header className="flex flex-col gap-6 max-w-3xl">
           <h1 className="font-headline text-5xl md:text-6xl font-semibold tracking-tight text-on-surface">Choose Your Passage</h1>

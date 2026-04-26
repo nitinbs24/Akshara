@@ -1,20 +1,29 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const ProfilePage = () => {
   const navigate = useNavigate();
+  const { user, logout, loading } = useAuth();
 
   const handleLogout = () => {
-    // Logout logic (clearing tokens, etc.)
-    console.log('Logging out...');
+    logout();
     navigate('/');
   };
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center bg-surface text-on-surface">Loading...</div>;
+  }
+
+  if (!user) {
+    return <div className="min-h-screen flex items-center justify-center bg-surface text-on-surface">Please log in to view your profile.</div>;
+  }
 
   return (
     <div className="min-h-screen flex flex-col font-body bg-surface text-on-surface">
       {/* TopNavBar */}
       <nav className="bg-[#f8f9fa] dark:bg-[#191c1d] border-b border-outline-variant/10">
-        <div className="flex justify-between items-center px-8 py-4 w-full max-w-7xl mx-auto">
+        <div className="flex justify-between items-center px-8 py-4 w-full max-w-full mx-auto">
           <Link to="/" className="text-2xl font-headline font-bold text-[#006778] dark:text-[#a8eefd] tracking-tight">
             Akshara
           </Link>
@@ -38,7 +47,7 @@ const ProfilePage = () => {
       </nav>
 
       {/* Main Content */}
-      <main className="flex-grow flex flex-col items-center justify-center py-16 px-6 md:px-12 w-full max-w-7xl mx-auto">
+      <main className="flex-grow flex flex-col items-center justify-center py-16 px-6 md:px-12 w-full max-w-full mx-auto">
         <div className="w-full max-w-2xl">
           <h1 className="font-headline text-4xl md:text-5xl text-on-surface tracking-tight mb-2 text-center md:text-left">Student Profile</h1>
           <p className="font-body text-on-surface-variant text-lg mb-12 text-center md:text-left">Manage your academic identity.</p>
@@ -52,10 +61,10 @@ const ProfilePage = () => {
                 <span className="material-symbols-outlined text-6xl" style={{ fontVariationSettings: "'FILL' 1" }}>face</span>
               </div>
               <div className="flex flex-col items-center md:items-start pt-2">
-                <h2 className="font-headline text-3xl font-semibold text-on-surface tracking-tight mb-1">Jane Doe</h2>
+                <h2 className="font-headline text-3xl font-semibold text-on-surface tracking-tight mb-1">{user.full_name}</h2>
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-low text-on-surface-variant text-sm font-label mb-4">
                   <span className="material-symbols-outlined text-sm">school</span>
-                  Level 4 Reader
+                  {user.level}
                 </span>
               </div>
             </div>
@@ -63,15 +72,15 @@ const ProfilePage = () => {
             <div className="space-y-6">
               <div className="flex flex-col md:flex-row justify-between py-4 group hover:bg-surface-container-low rounded-lg transition-colors px-4 -mx-4 cursor-default">
                 <div className="font-label text-on-surface-variant text-sm mb-1 md:mb-0 w-1/3">Full Name</div>
-                <div className="font-body text-on-surface font-medium w-2/3">Jane Doe</div>
+                <div className="font-body text-on-surface font-medium w-2/3">{user.full_name}</div>
               </div>
               <div className="flex flex-col md:flex-row justify-between py-4 group hover:bg-surface-container-low rounded-lg transition-colors px-4 -mx-4 cursor-default">
                 <div className="font-label text-on-surface-variant text-sm mb-1 md:mb-0 w-1/3">Email Address</div>
-                <div className="font-body text-on-surface font-medium w-2/3">jane@example.com</div>
+                <div className="font-body text-on-surface font-medium w-2/3">{user.email}</div>
               </div>
               <div className="flex flex-col md:flex-row justify-between py-4 group hover:bg-surface-container-low rounded-lg transition-colors px-4 -mx-4 cursor-default">
                 <div className="font-label text-on-surface-variant text-sm mb-1 md:mb-0 w-1/3">Date of Birth</div>
-                <div className="font-body text-on-surface font-medium w-2/3">March 15, 2012</div>
+                <div className="font-body text-on-surface font-medium w-2/3">{user.dob}</div>
               </div>
             </div>
 
@@ -90,7 +99,7 @@ const ProfilePage = () => {
 
       {/* Footer */}
       <footer className="bg-[#f3f4f5] dark:bg-[#1d2021] w-full mt-auto border-t border-[#bec8cb]/20">
-        <div className="flex flex-col md:flex-row justify-between items-center px-12 py-8 w-full max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row justify-between items-center px-12 py-8 w-full max-w-full mx-auto">
           <div className="text-lg font-headline font-bold text-[#006778] mb-4 md:mb-0">
             Akshara
           </div>

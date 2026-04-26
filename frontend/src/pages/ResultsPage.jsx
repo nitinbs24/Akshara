@@ -40,7 +40,7 @@ const ResultsPage = () => {
     <div className="bg-background text-on-background font-body min-h-screen flex flex-col">
       {/* Top Navigation */}
       <nav className="bg-[#f8f9fa]/80 dark:bg-[#191c1d]/80 backdrop-blur-2xl sticky top-0 z-50 border-b border-outline-variant/10 shadow-sm">
-        <div className="flex justify-between items-center w-full px-8 py-4 max-w-screen-2xl mx-auto">
+        <div className="flex justify-between items-center w-full px-8 py-4 max-w-full mx-auto">
           <Link to="/" className="font-headline text-2xl font-bold text-[#006778] dark:text-[#a8eefd]">
             Akshara
           </Link>
@@ -58,7 +58,7 @@ const ResultsPage = () => {
       </nav>
 
       {/* Main Content Canvas */}
-      <main className="flex-grow w-full max-w-screen-2xl mx-auto px-8 py-12 flex flex-col md:flex-row gap-12">
+      <main className="flex-grow w-full max-w-full mx-auto px-8 py-12 flex flex-col md:flex-row gap-12">
         {/* Left Column */}
         <div className="flex-grow flex flex-col gap-8 md:w-2/3">
           <header className="mb-4">
@@ -141,7 +141,7 @@ const ResultsPage = () => {
 
       {/* Footer */}
       <footer className="bg-[#f3f4f5] dark:bg-[#191c1d] border-t border-outline-variant/10 py-12 mt-auto">
-        <div className="flex flex-col md:flex-row justify-between items-center px-8 max-w-screen-2xl mx-auto gap-6 opacity-80">
+        <div className="flex flex-col md:flex-row justify-between items-center px-8 max-w-full mx-auto gap-6 opacity-80">
           <span className="font-headline text-lg font-semibold text-[#006778]">Akshara</span>
           <span className="font-body text-xs text-[#40484a]">© 2024 Akshara. Cultivating digital literacy.</span>
         </div>
