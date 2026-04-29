@@ -43,7 +43,11 @@ export const authApi = {
 
 export const passagesApi = {
   getPassages: async (difficulty = '') => {
-    const url = difficulty ? `/passages?difficulty=${difficulty}` : '/passages';
+    const baseUrl = '/passages';
+    const params = new URLSearchParams();
+    if (difficulty) params.append('difficulty', difficulty);
+    params.append('t', Date.now()); // Cache busting
+    const url = `${baseUrl}?${params.toString()}`;
     const response = await fetch(url);
     if (!response.ok) throw new Error('Failed to fetch passages');
     return response.json();

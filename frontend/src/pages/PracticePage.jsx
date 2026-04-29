@@ -5,32 +5,74 @@ import { passagesApi } from '../services/api';
 const PracticePage = () => {
   const [passages, setPassages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState('All');
-  const [selectedCategory, setSelectedCategory] = useState('Literature');
+  const [selectedCategory, setSelectedCategory] = useState('All');
 
   const difficulties = ['All', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
-  const categories = ['Literature', 'Science', 'History', 'News', 'Creative'];
+  const categories = ['All', 'Literature', 'Science', 'History', 'News'];
 
   useEffect(() => {
     fetchPassages();
-  }, [selectedDifficulty]);
+  }, []); // Only fetch once on mount
 
   const fetchPassages = async () => {
     setLoading(true);
+    setError(null);
     try {
-      const difficultyParam = selectedDifficulty === 'All' ? '' : selectedDifficulty;
-      const data = await passagesApi.getPassages(difficultyParam);
-      setPassages(data);
+      const data = await passagesApi.getPassages(); // Fetch all
+      console.log('Fetched passages data:', data);
+      if (Array.isArray(data)) {
+        setPassages(data);
+      } else {
+        throw new Error('Received invalid data format');
+      }
     } catch (err) {
       console.error('Error fetching passages:', err);
+      setError('Unable to load passages. Please check your connection and try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const filteredPassages = passages.filter(p => 
-    p.difficulty === selectedDifficulty || p.category === selectedCategory
-  );
+  const filteredPassages = passages.filter(p => {
+    const pLevel = p.cefr_level || p.difficulty || '';
+    const pCategory = p.category || p.topic || '';
+    
+    const matchesDifficulty = selectedDifficulty === 'All' || pLevel === selectedDifficulty;
+    const matchesCategory = selectedCategory === 'All' || pCategory === selectedCategory;
+    return matchesDifficulty && matchesCategory;
+  });
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-surface text-on-surface">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          <p className="font-body text-on-surface-variant">Curating your reading experience...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-surface text-on-surface">
+        <div className="flex flex-col items-center gap-6 max-w-md text-center px-6">
+          <span className="material-symbols-outlined text-6xl text-error">cloud_off</span>
+          <h2 className="font-headline text-2xl font-semibold">{error}</h2>
+          <button 
+            onClick={fetchPassages}
+            className="hero-gradient text-white px-8 py-3 rounded-full font-label font-bold"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  console.log('Filtered passages:', filteredPassages);
 
   return (
     <div className="bg-surface text-on-surface font-body antialiased min-h-screen flex flex-col">
@@ -108,36 +150,52 @@ const PracticePage = () => {
           </aside>
 
           {/* Passage Grid */}
-          <div className="flex-grow grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-            {passages.map((p, index) => (
-              <article key={p.id} className="bg-surface-container-lowest rounded-xl p-6 flex flex-col gap-6 group hover:bg-surface-container-low transition-colors duration-300 relative overflow-hidden shadow-sm">
-                <div className="flex justify-between items-start">
-                  <span className={`inline-flex items-center px-2.5 py-1 rounded-sm font-label text-xs font-bold tracking-wider uppercase ${
-                    index % 2 === 0 ? 'bg-primary-fixed text-on-primary-fixed' : 'bg-surface-container-high text-on-surface'
-                  }`}>
-                    {p.category}
-                  </span>
-                  <span className="font-label text-sm font-semibold text-primary">{p.difficulty}</span>
-                </div>
-                <div className="flex flex-col gap-3 flex-grow">
-                  <h2 className="font-headline text-2xl font-semibold leading-tight text-on-surface group-hover:text-primary transition-colors">{p.title}</h2>
-                  <p className="font-body text-sm text-on-surface-variant line-clamp-3 leading-relaxed">
-                    {p.description}
-                  </p>
-                </div>
-                <div className="pt-4 mt-auto">
-                  <Link 
-                    to={`/reading/${p.id}`}
-                    className={`w-full block text-center font-label text-sm font-semibold py-3 px-6 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
-                    index === 0 
-                      ? 'hero-gradient text-white shadow-sm hover:shadow-md hover:-translate-y-0.5' 
-                      : 'bg-transparent border border-outline-variant/20 text-primary hover:bg-surface-container-highest'
-                  }`}>
-                    Start Reading
-                  </Link>
-                </div>
-              </article>
-            ))}
+          <div className="flex-grow">
+            {filteredPassages.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-20 bg-surface-container-lowest rounded-xl border border-dashed border-outline-variant">
+                <span className="material-symbols-outlined text-6xl text-on-surface-variant mb-4">search_off</span>
+                <p className="font-headline text-xl text-on-surface">No passages found</p>
+                <p className="font-body text-on-surface-variant mt-2">Try adjusting your filters to explore other texts.</p>
+                <button 
+                  onClick={() => {setSelectedDifficulty('All'); setSelectedCategory('All');}}
+                  className="mt-6 text-primary font-semibold hover:underline"
+                >
+                  Reset all filters
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                {filteredPassages.map((p, index) => (
+                  <article key={p._id || index} className="bg-surface-container-lowest rounded-xl p-6 flex flex-col gap-6 group hover:bg-surface-container-low transition-colors duration-300 relative overflow-hidden shadow-sm">
+                    <div className="flex justify-between items-start">
+                      <span className={`inline-flex items-center px-2.5 py-1 rounded-sm font-label text-xs font-bold tracking-wider uppercase ${
+                        index % 2 === 0 ? 'bg-primary-fixed text-on-primary-fixed' : 'bg-surface-container-high text-on-surface'
+                      }`}>
+                        {p.category || p.topic}
+                      </span>
+                      <span className="font-label text-sm font-semibold text-primary">{p.cefr_level || p.difficulty}</span>
+                    </div>
+                    <div className="flex flex-col gap-3 flex-grow">
+                      <h2 className="font-headline text-2xl font-semibold leading-tight text-on-surface group-hover:text-primary transition-colors">{p.title}</h2>
+                      <p className="font-body text-sm text-on-surface-variant line-clamp-3 leading-relaxed">
+                        {p.text || p.description}
+                      </p>
+                    </div>
+                    <div className="pt-4 mt-auto">
+                      <Link 
+                        to={`/reading/${p._id}`}
+                        className={`w-full block text-center font-label text-sm font-semibold py-3 px-6 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+                        index === 0 
+                          ? 'hero-gradient text-white shadow-sm hover:shadow-md hover:-translate-y-0.5' 
+                          : 'bg-transparent border border-outline-variant/20 text-primary hover:bg-surface-container-highest'
+                      }`}>
+                        Start Reading
+                      </Link>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </main>

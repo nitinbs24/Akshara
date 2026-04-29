@@ -13,8 +13,9 @@ LEVEL_MAP = {
     "Level 5 Reader": "C1"
 }
 
-@passages_bp.route("/", methods=["GET"])
+@passages_bp.route("/", methods=["GET"], strict_slashes=False)
 def get_passages():
+    print("--- FETCHING PASSAGES ---")
     try:
         # Optional JWT verification to support both guest and logged-in users
         user_id = None
