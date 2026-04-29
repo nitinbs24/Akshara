@@ -15,14 +15,29 @@ const ResultsPage = () => {
 
   // Processing Heatmap Data from difflib opcodes
   const generateHeatmap = () => {
-    const transcriptWords = linguistic.transcript.split(' ');
-    // Simple logic: if difflib metrics were complex, we'd use opcodes.
-    // For now, we'll map the transcript and highlight based on alignment quality if available
-    // Or just show the transcript as analyzed.
-    return transcriptWords.map((word, i) => {
-      // In a more advanced version, we'd correlate this with linguistic.alignment
-      return { text: word, status: 'fluent' }; 
+    const gtWords = report.diagnostic_profile?.ground_truth_text?.split(' ') || [];
+    const hypWords = linguistic.transcript?.split(' ') || [];
+    const opcodes = linguistic.metrics?.opcodes || [];
+
+    if (!opcodes.length) {
+      return hypWords.map(word => ({ text: word, status: 'fluent' }));
+    }
+
+    const heatmap = [];
+    opcodes.forEach(([tag, i1, i2, j1, j2]) => {
+      if (tag === 'equal') {
+        for (let j = j1; j < j2; j++) {
+          heatmap.push({ text: hypWords[j], status: 'fluent' });
+        }
+      } else if (tag === 'replace' || tag === 'insert') {
+        for (let j = j1; j < j2; j++) {
+          heatmap.push({ text: hypWords[j], status: 'error' });
+        }
+      }
+      // Note: 'delete' opcodes are skipped in the heatmap as they represent missing words from the spoken transcript
     });
+
+    return heatmap;
   };
 
   const heatmapData = generateHeatmap();

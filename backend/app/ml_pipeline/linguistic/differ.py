@@ -1,4 +1,5 @@
 import jiwer
+import difflib
 
 class Differ:
     @staticmethod
@@ -17,7 +18,8 @@ class Differ:
                 "insertions": len(hyp.split()),
                 "deletions": 0,
                 "substitutions": 0,
-                "hits": 0
+                "hits": 0,
+                "opcodes": []
             }
 
         # Compute WER and other metrics
@@ -25,6 +27,10 @@ class Differ:
         
         # Accuracy can be defined as (1 - WER) capped at 0
         accuracy = max(0, 1 - out.wer) * 100
+
+        # Calculate opcodes for frontend heatmap using difflib
+        s = difflib.SequenceMatcher(None, gt.split(), hyp.split())
+        opcodes = s.get_opcodes()
 
         return {
             "accuracy_percentage": round(accuracy, 2),
@@ -34,7 +40,8 @@ class Differ:
             "insertions": out.insertions,
             "deletions": out.deletions,
             "substitutions": out.substitutions,
-            "hits": out.hits
+            "hits": out.hits,
+            "opcodes": opcodes
         }
 
     @staticmethod

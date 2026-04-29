@@ -20,7 +20,6 @@ class Transcriber:
             
         result = self.whisper_pipe(
             wav_path, 
-            generate_kwargs={"prompt": ground_truth_text},
             return_timestamps="word"
         )
         transcript = result.get("text", "")

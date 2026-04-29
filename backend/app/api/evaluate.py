@@ -44,7 +44,10 @@ def process_audio():
 
         # 1. Pre-Processing
         AudioConverter.process_webm_to_wav(webm_path, wav_path)
-        vad_timestamps = VADFilter.run_vad_on_wav(wav_path)
+        try:
+            vad_timestamps = VADFilter.run_vad_on_wav(wav_path)
+        except ValueError as ve:
+            return jsonify({"error": "No human speech detected", "details": str(ve)}), 400
         
         # 2. Linguistic Engine (Branch A)
         linguistic_data = linguistic_engine.process_linguistic(wav_path, ground_truth_text)

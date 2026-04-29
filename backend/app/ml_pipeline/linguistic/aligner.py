@@ -44,6 +44,9 @@ class Aligner:
         if not self.alignment_model:
             return {"error": "Alignment model not loaded"}
             
+        if not transcript or not transcript.strip():
+            return {"word_alignments": []}
+            
         try:
             waveform, sr = torchaudio.load(wav_path)
             if sr != self.sample_rate:
@@ -51,7 +54,11 @@ class Aligner:
 
             # Pre-process transcript: uppercase, replace spaces with |
             normalized_transcript = transcript.upper().replace(" ", "|")
-            tokens = [self.dictionary.get(c, self.dictionary['<unk>']) for c in normalized_transcript]
+            
+            # Filter out characters not in the dictionary (e.g., punctuation) to prevent KeyError
+            normalized_transcript = "".join([c for c in normalized_transcript if c in self.dictionary])
+            
+            tokens = [self.dictionary[c] for c in normalized_transcript]
 
             with torch.inference_mode():
                 emissions, _ = self.alignment_model(waveform)

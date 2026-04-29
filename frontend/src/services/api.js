@@ -76,7 +76,8 @@ export const evaluationApi = {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.error || 'Audio processing failed');
+      const detailedMessage = errorData.details || errorData.error || 'Audio processing failed';
+      throw new Error(detailedMessage);
     }
     return response.json();
   },

@@ -5,8 +5,8 @@ pydub
 soundfile
 librosa
 scikit-learn
-torch
-torchaudio
+torch<2.9
+torchaudio<2.9
 onnxruntime
 transformers
 accelerate

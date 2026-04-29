@@ -6,6 +6,13 @@ from dotenv import load_dotenv
 
 from app.database.mongo import mongo
 
+# Set environment variables for local model caching BEFORE any ML libraries are loaded
+# This ensures HuggingFace and Torch Hub models download to the project directory
+LOCAL_MODELS_DIR = os.path.join(os.path.dirname(__file__), "ml_pipeline", "local_models")
+os.makedirs(LOCAL_MODELS_DIR, exist_ok=True)
+os.environ["HF_HOME"] = os.path.join(LOCAL_MODELS_DIR, "huggingface")
+os.environ["TORCH_HOME"] = os.path.join(LOCAL_MODELS_DIR, "torch")
+
 bcrypt = Bcrypt()
 jwt = JWTManager()
 

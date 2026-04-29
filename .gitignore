@@ -33,3 +33,4 @@ yarn-error.log
 
 # Backend Additional
 backend/temp_audio/
+backend/app/ml_pipeline/local_models/
