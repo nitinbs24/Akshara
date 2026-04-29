@@ -1,20 +1,45 @@
-import difflib
+import jiwer
 
 class Differ:
     @staticmethod
-    def compute_accuracy_difflib(whisper_transcript: str, ground_truth_text: str):
+    def compute_wer_metrics(whisper_transcript: str, ground_truth_text: str):
         """
-        3.8 Python difflib (SequenceMatcher) execution
+        Phase 1:jiwer implementation for Word Error Rate and categorization.
         """
-        s = difflib.SequenceMatcher(None, ground_truth_text.split(), whisper_transcript.split())
-        opcodes = s.get_opcodes()
+        # Normalize both strings
+        gt = ground_truth_text.strip().lower()
+        hyp = whisper_transcript.strip().lower()
 
-        # Calculate Accuracy % and WCPM loosely
-        accuracy = s.ratio() * 100
-        words_correct = sum(1 for tag, _, _, _, _ in opcodes if tag == 'equal')
+        if not gt:
+            return {
+                "accuracy_percentage": 0.0,
+                "wer": 1.0,
+                "insertions": len(hyp.split()),
+                "deletions": 0,
+                "substitutions": 0,
+                "hits": 0
+            }
+
+        # Compute WER and other metrics
+        out = jiwer.process_words(gt, hyp)
         
+        # Accuracy can be defined as (1 - WER) capped at 0
+        accuracy = max(0, 1 - out.wer) * 100
+
         return {
             "accuracy_percentage": round(accuracy, 2),
-            "words_correct": words_correct,
-            "opcodes": opcodes
+            "wer": round(out.wer, 4),
+            "mer": round(out.mer, 4),
+            "wil": round(out.wil, 4),
+            "insertions": out.insertions,
+            "deletions": out.deletions,
+            "substitutions": out.substitutions,
+            "hits": out.hits
         }
+
+    @staticmethod
+    def compute_accuracy_difflib(whisper_transcript: str, ground_truth_text: str):
+        """
+        Legacy compatibility wrapper.
+        """
+        return Differ.compute_wer_metrics(whisper_transcript, ground_truth_text)

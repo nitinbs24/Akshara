@@ -9,7 +9,10 @@ torch
 torchaudio
 onnxruntime
 transformers
-anthropic
+accelerate
+jiwer
+pydantic
+certifi
 python-dotenv
 flask-pymongo
 flask-bcrypt
